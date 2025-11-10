@@ -65,17 +65,8 @@ export default function CreateNewsPage(): JSX.Element {
         setNewsTypeOptions(options);
       } catch (error) {
         console.error('Error fetching news types:', error);
-        // Fallback to static options if API fails
-        setNewsTypeOptions([
-          { key: "politics", label: "Politics" },
-          { key: "economy", label: "Economy" },
-          { key: "sports", label: "Sports" },
-          { key: "technology", label: "Technology" },
-          { key: "health", label: "Health" },
-          { key: "education", label: "Education" },
-          { key: "entertainment", label: "Entertainment" },
-          { key: "general", label: "General" },
-        ]);
+        // Set empty array if API fails - no fallback hardcoded options
+        setNewsTypeOptions([]);
       } finally {
         setLoadingNewsTypes(false);
       }
