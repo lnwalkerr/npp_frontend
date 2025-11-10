@@ -124,9 +124,9 @@ function Page() {
 
       if (data.status_code === 200) {
         setApiData({
-          queries: data.queries,
-          totalPages: data.totalPages,
-          totalItems: data.totalItems,
+          queries: data.data || [],
+          totalPages: data.pagination?.totalPages || 1,
+          totalItems: data.pagination?.totalItems || 0,
         });
       } else {
         console.error("Error fetching queries:", data.message);
@@ -532,7 +532,7 @@ function Page() {
           {/* HeroUI Table */}
           <Table
             aria-label="Queries table"
-            items={apiData.queries}
+            items={apiData.queries || []}
             bottomContent={
               apiData.totalPages > 0 ? (
                 <div className="flex w-full justify-end pr-4 mt-4">

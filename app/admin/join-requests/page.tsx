@@ -86,18 +86,42 @@ function Page() {
   const fetchRequests = async (pageNum: number, currentFilters: any) => {
     setIsLoading(true);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     try {
-      // Since backend doesn't have join-requests API, show empty data
-      setApiData({
-        requests: [],
-        totalPages: 1,
-        totalItems: 0,
+      const queryParams = new URLSearchParams({
+        page: pageNum.toString(),
+        limit: "10",
       });
+
+      // Add filters
+      if (currentFilters.search) {
+        queryParams.append("search", currentFilters.search);
+      }
+      if (currentFilters.type && currentFilters.type !== "All Types") {
+        queryParams.append("type", currentFilters.type);
+      }
+      if (currentFilters.status && currentFilters.status !== "All Statuses") {
+        queryParams.append("status", currentFilters.status);
+      }
+
+      const response = await fetch(`/api/admin/join-requests?${queryParams}`);
+      const data = await response.json();
+
+      if (data.status_code === 200) {
+        setApiData({
+          requests: data.data || [],
+          totalPages: data.pagination?.totalPages || 1,
+          totalItems: data.pagination?.totalItems || 0,
+        });
+      } else {
+        console.error("Error fetching join requests:", data.message);
+        setApiData({
+          requests: [],
+          totalPages: 1,
+          totalItems: 0,
+        });
+      }
     } catch (error) {
-      console.error("Error fetching requests:", error);
+      console.error("Error fetching join requests:", error);
       setApiData({
         requests: [],
         totalPages: 1,
@@ -321,7 +345,7 @@ function Page() {
           {/* HeroUI Table */}
           <Table
             aria-label="Join requests table"
-            items={apiData.requests}
+            items={apiData.requests || []}
             bottomContent={
               apiData.totalPages > 0 ? (
                 <div className="flex w-full justify-end pr-4 mt-4">
