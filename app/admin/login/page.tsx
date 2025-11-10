@@ -9,6 +9,7 @@ import { Checkbox } from "@heroui/checkbox";
 import { Eye, EyeOff, Shield, Lock } from "lucide-react";
 
 import { useAuth } from "../../auth-context";
+import { ThemeSwitch } from "@/components/theme-switch";
 
 const AdminLoginPage = memo(function AdminLoginPage() {
   const [userId, setUserId] = useState("9999911111");
@@ -92,13 +93,18 @@ const AdminLoginPage = memo(function AdminLoginPage() {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 overflow-auto">
-      <Card className="w-full max-w-md shadow-xl border-0 min-h-[500px]">
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 overflow-auto">
+      {/* Theme Switch - Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeSwitch />
+      </div>
+
+      <Card className="w-full max-w-md shadow-xl border-0 min-h-[500px] bg-white dark:bg-gray-800">
         <CardHeader className="flex flex-col items-center pb-2">
-          <h1 className="text-2xl font-bold text-center text-gray-800">
+          <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
             Admin Portal
           </h1>
-          <p className="text-gray-600 text-center text-sm">
+          <p className="text-gray-600 dark:text-gray-400 text-center text-sm">
             Secure access to the administration panel
           </p>
         </CardHeader>
@@ -109,7 +115,7 @@ const AdminLoginPage = memo(function AdminLoginPage() {
               <Input
                 classNames={{
                   input: "text-sm",
-                  label: "text-gray-700 font-medium",
+                  label: "text-gray-700 dark:text-gray-300 font-medium",
                 }}
                 errorMessage={userIdError}
                 isInvalid={!!userIdError}
@@ -131,7 +137,7 @@ const AdminLoginPage = memo(function AdminLoginPage() {
               <Input
                 classNames={{
                   input: "text-sm pr-10",
-                  label: "text-gray-700 font-medium",
+                  label: "text-gray-700 dark:text-gray-300 font-medium",
                 }}
                 endContent={
                   <button
@@ -168,7 +174,7 @@ const AdminLoginPage = memo(function AdminLoginPage() {
             <div className="flex items-center justify-between">
               <Checkbox
                 classNames={{
-                  label: "text-gray-600 text-sm",
+                  label: "text-gray-600 dark:text-gray-400 text-sm",
                 }}
                 isSelected={rememberMe}
                 size="sm"
@@ -177,7 +183,7 @@ const AdminLoginPage = memo(function AdminLoginPage() {
                 Remember me
               </Checkbox>
               <button
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"
                 type="button"
                 onClick={() =>
                   alert(

@@ -19,7 +19,7 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="en">
       <head />
       <body className="min-h-screen text-foreground bg-background font-sans antialiased">
-        <Providers themeProps={{ attribute: "class", defaultTheme: "white" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           {children}
         </Providers>
       </body>
