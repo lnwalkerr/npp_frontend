@@ -30,15 +30,26 @@ export default function EditNewsPage(): JSX.Element {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const hasFetchedNewsTypes = useRef(false);
 
   // Fetch news types on component mount
   useEffect(() => {
     const fetchNewsTypes = async () => {
+      // Prevent duplicate API calls
+      if (hasFetchedNewsTypes.current) {
+        console.log('News types already fetched, skipping duplicate call');
+        return;
+      }
+
+      console.log('Fetching news types from API...');
+      hasFetchedNewsTypes.current = true;
+
       try {
         setLoadingNewsTypes(true);
 
+        console.log('API Call 1: Fetching master category...');
         // First API call to get the master category ID
-        const categoryResponse = await fetch('http://localhost:5001/api/master/masterCategory/getAll?code=typeOfNews', {
+        const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -57,8 +68,9 @@ export default function EditNewsPage(): JSX.Element {
 
         const masterCategoryId = categoryData.data[0]._id;
 
+        console.log('API Call 2: Fetching news types for category ID:', masterCategoryId);
         // Second API call to get the news types using the category ID
-        const typesResponse = await fetch(`http://localhost:5001/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
+        const typesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -78,19 +90,11 @@ export default function EditNewsPage(): JSX.Element {
         }));
 
         setNewsTypeOptions(options);
+        console.log('Successfully loaded', options.length, 'news types');
       } catch (error) {
         console.error('Error fetching news types:', error);
-        // Fallback to static options if API fails
-        setNewsTypeOptions([
-          { key: "politics", label: "Politics" },
-          { key: "economy", label: "Economy" },
-          { key: "sports", label: "Sports" },
-          { key: "technology", label: "Technology" },
-          { key: "health", label: "Health" },
-          { key: "education", label: "Education" },
-          { key: "entertainment", label: "Entertainment" },
-          { key: "general", label: "General" },
-        ]);
+        // Set empty array if API fails - no fallback hardcoded options
+        setNewsTypeOptions([]);
       } finally {
         setLoadingNewsTypes(false);
       }
