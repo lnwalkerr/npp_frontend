@@ -139,7 +139,7 @@ const NavbarLayout = memo(function NavbarLayout({
                   className={`flex items-center gap-1.5 font-medium transition-all duration-200 whitespace-nowrap rounded-md px-2 py-1.5 ${
                     isActive
                       ? "bg-blue-500 text-white shadow-md border-l-4 border-blue-600"
-                      : "text-foreground hover:bg-gray-100 hover:text-blue-600"
+                      : "text-foreground hover:bg-default-100 dark:hover:bg-default-200 hover:text-blue-600"
                   }`}
                   href={item.href}
                 >

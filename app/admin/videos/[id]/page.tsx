@@ -39,7 +39,7 @@ export default function EditNewsPage(): JSX.Element {
       {/* Header Section */}
       <div className="flex items-center gap-4 mb-6">
         <button
-          className="flex items-center justify-center p-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+          className="flex items-center justify-center p-2 rounded-full bg-default-100 text-default-700 hover:bg-default-200 hover:text-blue-600 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-default-200 dark:text-default-300 dark:hover:bg-default-300"
           title="Go back"
           onClick={handleBack}
         >
@@ -48,7 +48,7 @@ export default function EditNewsPage(): JSX.Element {
 
         <div>
           <h1 className="text-3xl font-bold text-foreground">Edit Video</h1>
-          <p className="mt-1 text-gray-500">Add YouTube videos</p>
+          <p className="mt-1 text-foreground/60">Add YouTube videos</p>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export default function EditNewsPage(): JSX.Element {
               />
 
               {/* Help Text */}
-              <p className="text-sm text-gray-500 -mt-4">
+              <p className="text-sm text-foreground/60 -mt-4">
                 Paste the full YouTube video URL
               </p>
 

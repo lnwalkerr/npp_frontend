@@ -127,7 +127,7 @@ export default function EditVideoPage(): JSX.Element {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-            <p className="text-gray-600">Loading video...</p>
+            <p className="text-foreground/60">Loading video...</p>
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function EditVideoPage(): JSX.Element {
       <div className="p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-gray-600 mb-4">Video not found</p>
+            <p className="text-foreground/60 mb-4">Video not found</p>
             <Button onClick={() => router.push("/admin/videos")}>
               Back to Videos
             </Button>
@@ -154,7 +154,7 @@ export default function EditVideoPage(): JSX.Element {
       {/* Header Section */}
       <div className="flex items-center gap-4 mb-6">
         <button
-          className="flex items-center justify-center p-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-blue-600 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+          className="flex items-center justify-center p-2 rounded-full bg-default-100 text-default-700 hover:bg-default-200 hover:text-blue-600 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-default-200 dark:text-default-300 dark:hover:bg-default-300"
           title="Go back"
           onClick={handleBack}
         >
