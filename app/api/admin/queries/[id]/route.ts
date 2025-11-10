@@ -42,6 +42,12 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = params;
     const body = await request.json();
 
@@ -49,8 +55,7 @@ export async function PATCH(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        // Add authorization header if needed
-        // "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
     });
@@ -79,14 +84,19 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = params;
 
     const response = await fetch(`${API_BASE_URL}/api/admin/queries/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        // Add authorization header if needed
-        // "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
