@@ -154,28 +154,62 @@ function Page() {
   }, []);
 
   const handleView = (request: JoinRequest) => {
-    // Only open details if status is Pending
-    if (request.status === "Pending") {
-      setSelectedRequest(request);
-      onOpen();
+    // Open details for all requests (not just pending)
+    setSelectedRequest(request);
+    onOpen();
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!selectedRequest) return;
+
+    try {
+      const endpoint = newStatus.toLowerCase() === 'approved' ? 'approve' : 'reject';
+      const response = await fetch(`/api/admin/join-requests/${endpoint}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: selectedRequest._id }),
+      });
+
+      const data = await response.json();
+
+      if (data.status_code === 200) {
+        // Refresh the requests list
+        fetchRequests(page, filters);
+      } else {
+        alert(`Failed to ${newStatus.toLowerCase()} request: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error updating request status:', error);
+      alert(`Failed to ${newStatus.toLowerCase()} request`);
     }
   };
 
-  const handleStatusChange = (newStatus: string) => {
-    if (selectedRequest) {
-      // In real implementation, call API to update status
-      // For demo, we'll just refetch
-      fetchRequests(page, filters);
-    }
-  };
-
-  const handleDelete = (id: number | string) => {
+  const handleDelete = async (id: number | string) => {
     const confirmed = confirm("Are you sure you want to delete this request?");
 
     if (confirmed) {
-      console.log("Deleted request with ID:", id);
-      // In real implementation, call API and then refetch
-      fetchRequests(page, filters);
+      try {
+        const response = await fetch(`/api/admin/join-requests/delete?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.status_code === 200) {
+          // Refresh the requests list
+          fetchRequests(page, filters);
+        } else {
+          alert(`Failed to delete request: ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Error deleting request:', error);
+        alert('Failed to delete request');
+      }
     }
   };
 
@@ -290,7 +324,7 @@ function Page() {
                 <Button
                   color="primary"
                   onPress={() => {
-                    handleStatusChange("Accepted");
+                    handleStatusChange("approved");
                     onClose();
                   }}
                 >
@@ -299,7 +333,7 @@ function Page() {
                 <Button
                   color="danger"
                   onPress={() => {
-                    handleStatusChange("Rejected");
+                    handleStatusChange("rejected");
                     onClose();
                   }}
                 >
