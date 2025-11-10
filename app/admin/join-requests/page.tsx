@@ -25,7 +25,7 @@ import {
 import { Eye, Trash2 } from "lucide-react";
 
 interface JoinRequest {
-  id: number;
+  _id: string;
   constituency: string;
   type: string;
   experience: string;
@@ -212,7 +212,7 @@ function Page() {
               />
               <Trash2
                 className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
-                onClick={() => handleDelete(request.id)}
+                onClick={() => handleDelete(request._id)}
               />
             </div>
           );
@@ -249,7 +249,7 @@ function Page() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">ID</p>
-                        <p className="font-medium">{selectedRequest.id}</p>
+                        <p className="font-medium">{selectedRequest._id}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Constituency</p>
@@ -372,7 +372,7 @@ function Page() {
               loadingState={isLoading ? "loading" : "idle"}
             >
               {(item: JoinRequest) => (
-                <TableRow key={item.id}>
+                <TableRow key={item._id}>
                   {(columnKey) => (
                     <TableCell>{renderCell(item, String(columnKey))}</TableCell>
                   )}

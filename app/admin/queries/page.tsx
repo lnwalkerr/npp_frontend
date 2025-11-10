@@ -26,7 +26,7 @@ import {
 import { Eye, Trash2 } from "lucide-react";
 
 interface Query {
-  id: number;
+  _id: string;
   constituency: string;
   category: string;
   priority: string;
@@ -177,7 +177,7 @@ function Page() {
 
   const handleView = async (query: Query) => {
     try {
-      const response = await fetch(`/api/admin/queries/${query.id}`);
+      const response = await fetch(`/api/admin/queries/${query._id}`);
       const data = await response.json();
 
       if (data.status_code === 200) {
@@ -221,7 +221,7 @@ function Page() {
   const handleSendReply = async () => {
     if (selectedQuery && replyText.trim()) {
       try {
-        const response = await fetch(`/api/admin/queries/${selectedQuery.id}`, {
+        const response = await fetch(`/api/admin/queries/${selectedQuery._id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -251,7 +251,7 @@ function Page() {
   const handleStatusChange = async (newStatus: string) => {
     if (selectedQuery) {
       try {
-        const response = await fetch(`/api/admin/queries/${selectedQuery.id}`, {
+        const response = await fetch(`/api/admin/queries/${selectedQuery._id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -312,7 +312,7 @@ function Page() {
             />
             <Trash2
               className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
-              onClick={() => handleDelete(query.id)}
+                onClick={() => handleDelete(query._id)}
             />
           </div>
         );
@@ -349,7 +349,7 @@ function Page() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">ID</p>
-                        <p className="font-medium">{selectedQuery.id}</p>
+                        <p className="font-medium">{selectedQuery._id}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Subject</p>
@@ -569,7 +569,7 @@ function Page() {
               loadingState={isLoading ? "loading" : "idle"}
             >
               {(item: Query) => (
-                <TableRow key={item.id}>
+                <TableRow key={item._id}>
                   {(columnKey) => (
                     <TableCell>{renderCell(item, String(columnKey))}</TableCell>
                   )}
