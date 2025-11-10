@@ -181,8 +181,8 @@ function Page() {
       const data = await response.json();
 
       if (data.status_code === 200) {
-        setSelectedQuery(data.query);
-        setReplyText(data.query.reply || "");
+        setSelectedQuery(data.data);
+        setReplyText(data.data.reply || "");
         onOpen();
       } else {
         console.error("Error fetching query details:", data.message);

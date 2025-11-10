@@ -4,17 +4,22 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = params;
 
     const response = await fetch(`${API_BASE_URL}/api/admin/queries/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        // Add authorization header if needed
-        // "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -23,23 +28,24 @@ export async function GET(
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to fetch query" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching query:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const token = request.cookies.get("token")?.value;
@@ -65,23 +71,24 @@ export async function PATCH(
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to update query" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error updating query:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const token = request.cookies.get("token")?.value;
@@ -105,16 +112,17 @@ export async function DELETE(
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to delete query" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error deleting query:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
