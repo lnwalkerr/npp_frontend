@@ -532,6 +532,7 @@ function Page() {
           {/* HeroUI Table */}
           <Table
             aria-label="Queries table"
+            items={apiData.queries}
             bottomContent={
               apiData.totalPages > 0 ? (
                 <div className="flex w-full justify-end pr-4 mt-4">
@@ -554,7 +555,6 @@ function Page() {
               )}
             </TableHeader>
             <TableBody
-              items={apiData.queries}
               loadingContent={<Spinner />}
               loadingState={isLoading ? "loading" : "idle"}
             >

@@ -321,6 +321,7 @@ function Page() {
           {/* HeroUI Table */}
           <Table
             aria-label="Join requests table"
+            items={apiData.requests}
             bottomContent={
               apiData.totalPages > 0 ? (
                 <div className="flex w-full justify-end pr-4 mt-4">
@@ -343,7 +344,6 @@ function Page() {
               )}
             </TableHeader>
             <TableBody
-              items={apiData.requests}
               loadingContent={<Spinner />}
               loadingState={isLoading ? "loading" : "idle"}
             >
