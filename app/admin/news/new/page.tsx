@@ -15,13 +15,24 @@ export default function CreateNewsPage(): JSX.Element {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const hasFetchedNewsTypes = useRef(false);
 
   // Fetch news types on component mount
   useEffect(() => {
     const fetchNewsTypes = async () => {
+      // Prevent duplicate API calls
+      if (hasFetchedNewsTypes.current) {
+        console.log('News types already fetched, skipping duplicate call');
+        return;
+      }
+
+      console.log('Fetching news types from API...');
+      hasFetchedNewsTypes.current = true;
+
       try {
         setLoadingNewsTypes(true);
 
+        console.log('API Call 1: Fetching master category...');
         // First API call to get the master category ID
         const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`, {
           method: 'GET',
@@ -42,6 +53,7 @@ export default function CreateNewsPage(): JSX.Element {
 
         const masterCategoryId = categoryData.data[0]._id;
 
+        console.log('API Call 2: Fetching news types for category ID:', masterCategoryId);
         // Second API call to get the news types using the category ID
         const typesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
           method: 'GET',
@@ -63,6 +75,7 @@ export default function CreateNewsPage(): JSX.Element {
         }));
 
         setNewsTypeOptions(options);
+        console.log('Successfully loaded', options.length, 'news types');
       } catch (error) {
         console.error('Error fetching news types:', error);
         // Set empty array if API fails - no fallback hardcoded options
