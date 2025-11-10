@@ -1,16 +1,25 @@
 "use client";
 
 import { useState, FormEvent, useRef, KeyboardEvent, useEffect } from "react";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Input, Button, Textarea, Select, SelectItem, Chip } from "@heroui/react";
+import {
+  Input,
+  Button,
+  Textarea,
+  Select,
+  SelectItem,
+  Chip,
+} from "@heroui/react";
 import { Form } from "@heroui/form";
 
 export default function CreateNewsPage(): JSX.Element {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
-  const [newsTypeOptions, setNewsTypeOptions] = useState<{ key: string; label: string }[]>([]);
+  const [newsTypeOptions, setNewsTypeOptions] = useState<
+    { key: string; label: string }[]
+  >([]);
   const [loadingNewsTypes, setLoadingNewsTypes] = useState(true);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -22,48 +31,58 @@ export default function CreateNewsPage(): JSX.Element {
     const fetchNewsTypes = async () => {
       // Prevent duplicate API calls
       if (hasFetchedNewsTypes.current) {
-        console.log('News types already fetched, skipping duplicate call');
+        console.log("News types already fetched, skipping duplicate call");
+
         return;
       }
 
-      console.log('Fetching news types from API...');
+      console.log("Fetching news types from API...");
       hasFetchedNewsTypes.current = true;
 
       try {
         setLoadingNewsTypes(true);
 
-        console.log('API Call 1: Fetching master category...');
+        console.log("API Call 1: Fetching master category...");
         // First API call to get the master category ID
-        const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+        const categoryResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!categoryResponse.ok) {
-          throw new Error('Failed to fetch master category');
+          throw new Error("Failed to fetch master category");
         }
 
         const categoryData = await categoryResponse.json();
 
         if (!categoryData.data || categoryData.data.length === 0) {
-          throw new Error('No master category found for typeOfNews');
+          throw new Error("No master category found for typeOfNews");
         }
 
         const masterCategoryId = categoryData.data[0]._id;
 
-        console.log('API Call 2: Fetching news types for category ID:', masterCategoryId);
+        console.log(
+          "API Call 2: Fetching news types for category ID:",
+          masterCategoryId,
+        );
         // Second API call to get the news types using the category ID
-        const typesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+        const typesResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!typesResponse.ok) {
-          throw new Error('Failed to fetch news types');
+          throw new Error("Failed to fetch news types");
         }
 
         const typesData = await typesResponse.json();
@@ -75,9 +94,9 @@ export default function CreateNewsPage(): JSX.Element {
         }));
 
         setNewsTypeOptions(options);
-        console.log('Successfully loaded', options.length, 'news types');
+        console.log("Successfully loaded", options.length, "news types");
       } catch (error) {
-        console.error('Error fetching news types:', error);
+        console.error("Error fetching news types:", error);
         // Set empty array if API fails - no fallback hardcoded options
         setNewsTypeOptions([]);
       } finally {
@@ -138,6 +157,7 @@ export default function CreateNewsPage(): JSX.Element {
 
   const addTag = (tag: string) => {
     const trimmedTag = tag.trim();
+
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setTagInput("");
@@ -145,7 +165,7 @@ export default function CreateNewsPage(): JSX.Element {
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -160,7 +180,6 @@ export default function CreateNewsPage(): JSX.Element {
       addTag(tagInput);
     }
   };
-
 
   return (
     <div className="p-6">
@@ -217,17 +236,19 @@ export default function CreateNewsPage(): JSX.Element {
               {/* News Type */}
               <Select
                 isRequired
-                isDisabled={loadingNewsTypes}
                 errorMessage="Please select a news type"
+                isDisabled={loadingNewsTypes}
                 label="News Type"
                 labelPlacement="outside"
                 name="type"
-                placeholder={loadingNewsTypes ? "Loading news types..." : "Select news category"}
+                placeholder={
+                  loadingNewsTypes
+                    ? "Loading news types..."
+                    : "Select news category"
+                }
               >
                 {newsTypeOptions.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
+                  <SelectItem key={option.key}>{option.label}</SelectItem>
                 ))}
               </Select>
 
@@ -251,29 +272,35 @@ export default function CreateNewsPage(): JSX.Element {
 
               {/* Tags */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-foreground">Tags</label>
+                <label className="text-sm font-medium text-foreground">
+                  Tags
+                </label>
                 <div className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[3rem] bg-white w-full">
                   {tags.map((tag, index) => (
                     <Chip
                       key={index}
-                      onClose={() => removeTag(tag)}
-                      variant="flat"
+                      className="text-xs"
                       color="primary"
                       size="sm"
-                      className="text-xs"
+                      variant="flat"
+                      onClose={() => removeTag(tag)}
                     >
                       {tag}
                     </Chip>
                   ))}
                   <input
                     ref={tagInputRef}
+                    className="flex-1 min-w-[120px] outline-none bg-transparent text-sm placeholder:text-gray-400"
+                    placeholder={
+                      tags.length === 0
+                        ? "Add tags (press comma or Enter to add)"
+                        : ""
+                    }
                     type="text"
                     value={tagInput}
+                    onBlur={handleTagInputBlur}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagInputKeyDown}
-                    onBlur={handleTagInputBlur}
-                    placeholder={tags.length === 0 ? "Add tags (press comma or Enter to add)" : ""}
-                    className="flex-1 min-w-[120px] outline-none bg-transparent text-sm placeholder:text-gray-400"
                   />
                 </div>
                 <p className="text-xs text-gray-500">

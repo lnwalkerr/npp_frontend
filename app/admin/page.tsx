@@ -82,7 +82,9 @@ export default function Home() {
     <div className="space-y-4">
       <div className="mb-4">
         <h1 className="font-bold text-3xl text-foreground">Dashboard</h1>
-        <p className="mt-1 text-foreground/60">Welcome back to your admin panel</p>
+        <p className="mt-1 text-foreground/60">
+          Welcome back to your admin panel
+        </p>
       </div>
       <div className="flex gap-4 flex-wrap">
         {data.map((item) => (
@@ -91,14 +93,18 @@ export default function Home() {
             className="flex-1 flex flex-col justify-between border min-h-44 border-default-200 dark:border-default-100 rounded-xl p-6 bg-background shadow-md"
           >
             <div className="pb-3">
-              <div className="text-sm font-medium text-foreground/70">{item.title}</div>
+              <div className="text-sm font-medium text-foreground/70">
+                {item.title}
+              </div>
             </div>
             <div className="">
               <div>
                 <div className="text-2xl font-bold text-foreground">
                   {item.value}
                 </div>
-                <p className="text-green-600 dark:text-green-400 mt-1 text-[12px]">{item.change}</p>
+                <p className="text-green-600 dark:text-green-400 mt-1 text-[12px]">
+                  {item.change}
+                </p>
               </div>
             </div>
           </div>
@@ -113,7 +119,9 @@ export default function Home() {
           </div>
         </div>
         <div className="py-6 flex flex-1 mb-6 flex-col border border-default-200 dark:border-default-100 rounded-xl bg-background gap-6 shadow-2xl">
-          <div className="px-6 font-medium text-foreground">Activity Overview</div>
+          <div className="px-6 font-medium text-foreground">
+            Activity Overview
+          </div>
           <div className="px-6 flex-1">
             <LazyBarChart data={dataaa} height={400} />
           </div>

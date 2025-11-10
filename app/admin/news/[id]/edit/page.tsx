@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, FormEvent, useEffect, useRef, KeyboardEvent } from "react";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Input, Button, Textarea, Select, SelectItem, Chip } from "@heroui/react";
+import {
+  Input,
+  Button,
+  Textarea,
+  Select,
+  SelectItem,
+  Chip,
+} from "@heroui/react";
 import { Form } from "@heroui/form";
 
 interface NewsData {
@@ -25,7 +32,9 @@ export default function EditNewsPage(): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [newsData, setNewsData] = useState<NewsData | null>(null);
-  const [newsTypeOptions, setNewsTypeOptions] = useState<{ key: string; label: string }[]>([]);
+  const [newsTypeOptions, setNewsTypeOptions] = useState<
+    { key: string; label: string }[]
+  >([]);
   const [loadingNewsTypes, setLoadingNewsTypes] = useState(true);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -37,48 +46,58 @@ export default function EditNewsPage(): JSX.Element {
     const fetchNewsTypes = async () => {
       // Prevent duplicate API calls
       if (hasFetchedNewsTypes.current) {
-        console.log('News types already fetched, skipping duplicate call');
+        console.log("News types already fetched, skipping duplicate call");
+
         return;
       }
 
-      console.log('Fetching news types from API...');
+      console.log("Fetching news types from API...");
       hasFetchedNewsTypes.current = true;
 
       try {
         setLoadingNewsTypes(true);
 
-        console.log('API Call 1: Fetching master category...');
+        console.log("API Call 1: Fetching master category...");
         // First API call to get the master category ID
-        const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+        const categoryResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!categoryResponse.ok) {
-          throw new Error('Failed to fetch master category');
+          throw new Error("Failed to fetch master category");
         }
 
         const categoryData = await categoryResponse.json();
 
         if (!categoryData.data || categoryData.data.length === 0) {
-          throw new Error('No master category found for typeOfNews');
+          throw new Error("No master category found for typeOfNews");
         }
 
         const masterCategoryId = categoryData.data[0]._id;
 
-        console.log('API Call 2: Fetching news types for category ID:', masterCategoryId);
+        console.log(
+          "API Call 2: Fetching news types for category ID:",
+          masterCategoryId,
+        );
         // Second API call to get the news types using the category ID
-        const typesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+        const typesResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!typesResponse.ok) {
-          throw new Error('Failed to fetch news types');
+          throw new Error("Failed to fetch news types");
         }
 
         const typesData = await typesResponse.json();
@@ -90,9 +109,9 @@ export default function EditNewsPage(): JSX.Element {
         }));
 
         setNewsTypeOptions(options);
-        console.log('Successfully loaded', options.length, 'news types');
+        console.log("Successfully loaded", options.length, "news types");
       } catch (error) {
-        console.error('Error fetching news types:', error);
+        console.error("Error fetching news types:", error);
         // Set empty array if API fails - no fallback hardcoded options
         setNewsTypeOptions([]);
       } finally {
@@ -192,6 +211,7 @@ export default function EditNewsPage(): JSX.Element {
 
   const addTag = (tag: string) => {
     const trimmedTag = tag.trim();
+
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setTagInput("");
@@ -199,7 +219,7 @@ export default function EditNewsPage(): JSX.Element {
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -214,7 +234,6 @@ export default function EditNewsPage(): JSX.Element {
       addTag(tagInput);
     }
   };
-
 
   if (loading) {
     return (
@@ -274,99 +293,130 @@ export default function EditNewsPage(): JSX.Element {
               {/* Title */}
               <Input
                 isRequired
-                value={newsData.title}
-                onChange={(e) => setNewsData(prev => prev ? {...prev, title: e.target.value} : null)}
                 errorMessage="Please enter a title"
                 label="Title"
                 labelPlacement="outside"
                 name="title"
                 placeholder="News article title"
                 type="text"
+                value={newsData.title}
+                onChange={(e) =>
+                  setNewsData((prev) =>
+                    prev ? { ...prev, title: e.target.value } : null,
+                  )
+                }
               />
 
               {/* Description */}
               <Textarea
                 isRequired
-                value={newsData.description}
-                onChange={(e) => setNewsData(prev => prev ? {...prev, description: e.target.value} : null)}
                 errorMessage="Please enter a description"
                 label="Description"
                 labelPlacement="outside"
                 minRows={4}
                 name="description"
                 placeholder="News article description and content"
+                value={newsData.description}
                 variant="flat"
+                onChange={(e) =>
+                  setNewsData((prev) =>
+                    prev ? { ...prev, description: e.target.value } : null,
+                  )
+                }
               />
 
               {/* News Type */}
               <Select
                 isRequired
-                isDisabled={loadingNewsTypes}
-                selectedKeys={newsData.type ? [newsData.type] : []}
-                onSelectionChange={(keys) => {
-                  const selectedType = Array.from(keys)[0] as string;
-                  setNewsData(prev => prev ? {...prev, type: selectedType} : null);
-                }}
                 errorMessage="Please select a news type"
+                isDisabled={loadingNewsTypes}
                 label="News Type"
                 labelPlacement="outside"
                 name="type"
-                placeholder={loadingNewsTypes ? "Loading news types..." : "Select news category"}
+                placeholder={
+                  loadingNewsTypes
+                    ? "Loading news types..."
+                    : "Select news category"
+                }
+                selectedKeys={newsData.type ? [newsData.type] : []}
+                onSelectionChange={(keys) => {
+                  const selectedType = Array.from(keys)[0] as string;
+
+                  setNewsData((prev) =>
+                    prev ? { ...prev, type: selectedType } : null,
+                  );
+                }}
               >
                 {newsTypeOptions.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
+                  <SelectItem key={option.key}>{option.label}</SelectItem>
                 ))}
               </Select>
 
               {/* Author */}
               <Input
-                value={newsData.author || ""}
-                onChange={(e) => setNewsData(prev => prev ? {...prev, author: e.target.value} : null)}
                 label="Author"
                 labelPlacement="outside"
                 name="author"
                 placeholder="Enter author name"
                 type="text"
+                value={newsData.author || ""}
+                onChange={(e) =>
+                  setNewsData((prev) =>
+                    prev ? { ...prev, author: e.target.value } : null,
+                  )
+                }
               />
 
               {/* Date */}
               <Input
-                value={newsData.date ? new Date(newsData.date).toISOString().split('T')[0] : ""}
-                onChange={(e) => setNewsData(prev => prev ? {...prev, date: e.target.value} : null)}
                 label="Publication Date"
                 labelPlacement="outside"
                 name="date"
                 placeholder="Select publication date"
                 type="date"
+                value={
+                  newsData.date
+                    ? new Date(newsData.date).toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setNewsData((prev) =>
+                    prev ? { ...prev, date: e.target.value } : null,
+                  )
+                }
               />
 
               {/* Tags */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-foreground">Tags</label>
+                <label className="text-sm font-medium text-foreground">
+                  Tags
+                </label>
                 <div className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[3rem] bg-white w-full">
                   {tags.map((tag, index) => (
                     <Chip
                       key={index}
-                      onClose={() => removeTag(tag)}
-                      variant="flat"
+                      className="text-xs"
                       color="primary"
                       size="sm"
-                      className="text-xs"
+                      variant="flat"
+                      onClose={() => removeTag(tag)}
                     >
                       {tag}
                     </Chip>
                   ))}
                   <input
                     ref={tagInputRef}
+                    className="flex-1 min-w-[120px] outline-none bg-transparent text-sm placeholder:text-gray-400"
+                    placeholder={
+                      tags.length === 0
+                        ? "Add tags (press comma or Enter to add)"
+                        : ""
+                    }
                     type="text"
                     value={tagInput}
+                    onBlur={handleTagInputBlur}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagInputKeyDown}
-                    onBlur={handleTagInputBlur}
-                    placeholder={tags.length === 0 ? "Add tags (press comma or Enter to add)" : ""}
-                    className="flex-1 min-w-[120px] outline-none bg-transparent text-sm placeholder:text-gray-400"
                   />
                 </div>
                 <p className="text-xs text-gray-500">

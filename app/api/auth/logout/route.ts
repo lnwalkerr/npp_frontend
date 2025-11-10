@@ -7,5 +7,3 @@ export async function POST() {
 
   return res;
 }
-
-

@@ -19,17 +19,17 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to submit query" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error submitting query:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

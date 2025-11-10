@@ -1,12 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
 import { readFile, writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 
+import { NextRequest, NextResponse } from "next/server";
+
 interface Repository {
   _id: string;
   title: string;
-  images: Array<{ url: string; filename: string; originalName: string; description?: string }>;
+  images: Array<{
+    url: string;
+    filename: string;
+    originalName: string;
+    description?: string;
+  }>;
   created_at: string;
   updated_at?: string;
   imageCount: number;
@@ -17,9 +23,12 @@ const REPOSITORIES_FILE = join(process.cwd(), "data", "repositories.json");
 // Ensure data directory and repositories file exist
 async function ensureDataFile() {
   const dataDir = join(process.cwd(), "data");
+
   try {
     if (!existsSync(dataDir)) {
-      await import("fs").then(fs => fs.mkdirSync(dataDir, { recursive: true }));
+      await import("fs").then((fs) =>
+        fs.mkdirSync(dataDir, { recursive: true }),
+      );
     }
     if (!existsSync(REPOSITORIES_FILE)) {
       await writeFile(REPOSITORIES_FILE, JSON.stringify([], null, 2));
@@ -30,14 +39,19 @@ async function ensureDataFile() {
 }
 
 // Update repository
-async function updateRepository(id: string, title: string, newFiles: File[] = [], imagesToDelete: string[] = []) {
+async function updateRepository(
+  id: string,
+  title: string,
+  newFiles: File[] = [],
+  imagesToDelete: string[] = [],
+) {
   try {
     await ensureDataFile();
 
     const data = await readFile(REPOSITORIES_FILE, "utf-8");
     const repositories: Repository[] = JSON.parse(data);
 
-    const repositoryIndex = repositories.findIndex(repo => repo._id === id);
+    const repositoryIndex = repositories.findIndex((repo) => repo._id === id);
 
     if (repositoryIndex === -1) {
       return { success: false, message: "Repository not found" };
@@ -54,12 +68,15 @@ async function updateRepository(id: string, title: string, newFiles: File[] = []
         try {
           // Remove from filesystem
           const filePath = join(process.cwd(), "public", "uploads", filename);
+
           if (existsSync(filePath)) {
             await unlink(filePath);
           }
 
           // Remove from repository images array
-          repository.images = repository.images.filter(img => img.filename !== filename);
+          repository.images = repository.images.filter(
+            (img) => img.filename !== filename,
+          );
         } catch (error) {
           console.error(`Error deleting image ${filename}:`, error);
           // Continue with other deletions
@@ -74,6 +91,7 @@ async function updateRepository(id: string, title: string, newFiles: File[] = []
     if (newFiles.length > 0) {
       // Create uploads directory if it doesn't exist
       const uploadsDir = join(process.cwd(), "public", "uploads");
+
       try {
         await mkdir(uploadsDir, { recursive: true });
       } catch (error) {
@@ -81,13 +99,18 @@ async function updateRepository(id: string, title: string, newFiles: File[] = []
       }
 
       // Save new files
-      const savedFiles: { filename: string; originalName: string; url: string; description?: string }[] = [];
+      const savedFiles: {
+        filename: string;
+        originalName: string;
+        url: string;
+        description?: string;
+      }[] = [];
 
       for (let i = 0; i < newFiles.length; i++) {
         const file = newFiles[i];
         const timestamp = Date.now();
         const randomId = Math.round(Math.random() * 1e9);
-        const extension = file.name.split('.').pop() || 'jpg';
+        const extension = file.name.split(".").pop() || "jpg";
         const filename = `${timestamp}-${randomId}.${extension}`;
 
         const filePath = join(uploadsDir, filename);
@@ -99,7 +122,7 @@ async function updateRepository(id: string, title: string, newFiles: File[] = []
         savedFiles.push({
           filename,
           originalName: file.name,
-          url: `/uploads/${filename}`
+          url: `/uploads/${filename}`,
         });
       }
 
@@ -119,16 +142,16 @@ async function updateRepository(id: string, title: string, newFiles: File[] = []
       message: "Repository updated successfully",
       data: repository,
     };
-
   } catch (error) {
     console.error("Error updating repository:", error);
+
     return { success: false, message: "Failed to update repository" };
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -136,7 +159,7 @@ export async function PATCH(
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Repository ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -146,19 +169,22 @@ export async function PATCH(
     if (!title) {
       return NextResponse.json(
         { success: false, message: "Title is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Get images to delete
     const imagesToDeleteJson = formData.get("imagesToDelete") as string;
-    const imagesToDelete: string[] = imagesToDeleteJson ? JSON.parse(imagesToDeleteJson) : [];
+    const imagesToDelete: string[] = imagesToDeleteJson
+      ? JSON.parse(imagesToDeleteJson)
+      : [];
 
     // Note: Individual image descriptions are not used in this implementation
 
     // Get all new files from form data
     const newFiles: File[] = [];
     const formDataEntries = Array.from(formData.entries());
+
     for (const [key, value] of formDataEntries) {
       if (value instanceof File && key.startsWith("photo_")) {
         newFiles.push(value);
@@ -172,12 +198,12 @@ export async function PATCH(
     }
 
     return NextResponse.json(result);
-
   } catch (error) {
     console.error("Error in PATCH /api/admin/images/[id]/update:", error);
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

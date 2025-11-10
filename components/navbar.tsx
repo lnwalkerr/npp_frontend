@@ -74,14 +74,18 @@ const NavbarLayout = memo(function NavbarLayout({
     logout();
   }, [logout]);
 
-  const handleNavClick = useCallback((href: string) => {
-    if (!isAuthenticated && href !== "/admin/login") {
-      // Redirect to login if not authenticated and not already on login page
-      window.location.href = "/admin/login";
-      return;
-    }
-    // Allow navigation if authenticated or going to login page
-  }, [isAuthenticated]);
+  const handleNavClick = useCallback(
+    (href: string) => {
+      if (!isAuthenticated && href !== "/admin/login") {
+        // Redirect to login if not authenticated and not already on login page
+        window.location.href = "/admin/login";
+
+        return;
+      }
+      // Allow navigation if authenticated or going to login page
+    },
+    [isAuthenticated],
+  );
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -89,7 +93,7 @@ const NavbarLayout = memo(function NavbarLayout({
       <div className="flex h-screen">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto" />
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
@@ -103,13 +107,15 @@ const NavbarLayout = memo(function NavbarLayout({
       <div className="flex h-screen">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Admin Access Required</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Admin Access Required
+            </h2>
             <p className="text-gray-600 mb-6">
               Please log in to access the admin panel.
             </p>
             <a
-              href="/admin/login"
               className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+              href="/admin/login"
             >
               Go to Login
             </a>
@@ -157,7 +163,9 @@ const NavbarLayout = memo(function NavbarLayout({
         {/* TOP NAVBAR */}
         <div className="fixed top-0 left-[clamp(200px,20%,256px)] right-0 h-15 bg-background dark:bg-default-100 border-b border-default-200 dark:border-default-300 flex items-center justify-between gap-4 px-6 z-10">
           <div>
-            <h2 className="font-semibold text-foreground">Social Group Admin</h2>
+            <h2 className="font-semibold text-foreground">
+              Social Group Admin
+            </h2>
           </div>
           <div className="flex items-center justify-center gap-2">
             {/* ThemeSwitch with hover circle */}

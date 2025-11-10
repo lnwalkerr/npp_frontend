@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir, readFile } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+
+import { NextRequest, NextResponse } from "next/server";
 
 interface Repository {
   _id: string;
@@ -16,9 +17,12 @@ const REPOSITORIES_FILE = join(process.cwd(), "data", "repositories.json");
 // Ensure data directory and repositories file exist
 async function ensureDataFile() {
   const dataDir = join(process.cwd(), "data");
+
   try {
     if (!existsSync(dataDir)) {
-      await import("fs").then(fs => fs.mkdirSync(dataDir, { recursive: true }));
+      await import("fs").then((fs) =>
+        fs.mkdirSync(dataDir, { recursive: true }),
+      );
     }
     if (!existsSync(REPOSITORIES_FILE)) {
       await writeFile(REPOSITORIES_FILE, JSON.stringify([], null, 2));
@@ -53,13 +57,14 @@ export async function POST(request: NextRequest) {
     if (!title) {
       return NextResponse.json(
         { success: false, message: "Title is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Get all files from form data
     const files: File[] = [];
     const formDataEntries = Array.from(formData.entries());
+
     for (const [key, value] of formDataEntries) {
       if (value instanceof File && key.startsWith("photo_")) {
         files.push(value);
@@ -69,12 +74,13 @@ export async function POST(request: NextRequest) {
     if (files.length === 0) {
       return NextResponse.json(
         { success: false, message: "At least one image file is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = join(process.cwd(), "public", "uploads");
+
     try {
       await mkdir(uploadsDir, { recursive: true });
     } catch (error) {
@@ -82,12 +88,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Save files locally
-    const savedFiles: { filename: string; originalName: string; url: string }[] = [];
+    const savedFiles: {
+      filename: string;
+      originalName: string;
+      url: string;
+    }[] = [];
 
     for (const file of files) {
       const timestamp = Date.now();
       const randomId = Math.round(Math.random() * 1e9);
-      const extension = file.name.split('.').pop() || 'jpg';
+      const extension = file.name.split(".").pop() || "jpg";
       const filename = `${timestamp}-${randomId}.${extension}`;
 
       const filePath = join(uploadsDir, filename);
@@ -99,7 +109,7 @@ export async function POST(request: NextRequest) {
       savedFiles.push({
         filename,
         originalName: file.name,
-        url: `/uploads/${filename}`
+        url: `/uploads/${filename}`,
       });
     }
 
@@ -109,7 +119,7 @@ export async function POST(request: NextRequest) {
       title,
       images: savedFiles,
       created_at: new Date().toISOString(),
-      imageCount: savedFiles.length
+      imageCount: savedFiles.length,
     };
 
     // Save repository metadata
@@ -120,13 +130,12 @@ export async function POST(request: NextRequest) {
       message: "Repository created successfully (local storage)",
       data: repository,
     });
-
   } catch (error) {
     console.error("Error creating repository:", error);
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

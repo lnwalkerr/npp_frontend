@@ -2,13 +2,7 @@
 
 import React, { useState } from "react";
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import {
-  Input,
-  Button,
-  Textarea,
-  Select,
-  SelectItem,
-} from "@heroui/react";
+import { Input, Button, Textarea, Select, SelectItem } from "@heroui/react";
 import { Form } from "@heroui/form";
 
 interface QueryFormData {
@@ -24,7 +18,10 @@ interface QueryFormData {
 
 function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [submitMessage, setSubmitMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState<QueryFormData>({
     userName: "",
@@ -43,15 +40,15 @@ function Page() {
     "Healthcare",
     "Agriculture",
     "Employment",
-    "Other"
+    "Other",
   ];
 
   const priorities = ["High", "Medium", "Low"];
 
   const handleInputChange = (field: keyof QueryFormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -61,10 +58,10 @@ function Page() {
     setSubmitMessage(null);
 
     try {
-      const response = await fetch('/api/public/queries', {
-        method: 'POST',
+      const response = await fetch("/api/public/queries", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -72,7 +69,10 @@ function Page() {
       const data = await response.json();
 
       if (data.status_code === 201) {
-        setSubmitMessage({ type: 'success', text: 'Your query has been submitted successfully! We will get back to you soon.' });
+        setSubmitMessage({
+          type: "success",
+          text: "Your query has been submitted successfully! We will get back to you soon.",
+        });
         // Reset form
         setFormData({
           userName: "",
@@ -85,11 +85,17 @@ function Page() {
           priority: "Medium",
         });
       } else {
-        setSubmitMessage({ type: 'error', text: data.message || 'Failed to submit query. Please try again.' });
+        setSubmitMessage({
+          type: "error",
+          text: data.message || "Failed to submit query. Please try again.",
+        });
       }
     } catch (error) {
-      console.error('Error submitting query:', error);
-      setSubmitMessage({ type: 'error', text: 'Network error. Please check your connection and try again.' });
+      console.error("Error submitting query:", error);
+      setSubmitMessage({
+        type: "error",
+        text: "Network error. Please check your connection and try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -120,8 +126,12 @@ function Page() {
 
         {/* Success/Error Message */}
         {submitMessage && (
-          <div className={`mb-6 p-4 rounded-md ${submitMessage.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-            <p className={`text-sm ${submitMessage.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+          <div
+            className={`mb-6 p-4 rounded-md ${submitMessage.type === "success" ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}
+          >
+            <p
+              className={`text-sm ${submitMessage.type === "success" ? "text-green-800" : "text-red-800"}`}
+            >
               {submitMessage.text}
             </p>
           </div>
@@ -135,65 +145,75 @@ function Page() {
             </h2>
           </CardHeader>
           <CardBody>
-            <Form onSubmit={handleSubmit} className="space-y-6">
+            <Form className="space-y-6" onSubmit={handleSubmit}>
               {/* Personal Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   isRequired
+                  className="w-full"
                   label="Full Name"
                   placeholder="Enter your full name"
                   value={formData.userName}
-                  onChange={(e) => handleInputChange("userName", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("userName", e.target.value)
+                  }
                 />
 
                 <Input
                   isRequired
-                  type="email"
+                  className="w-full"
                   label="Email Address"
                   placeholder="your.email@example.com"
+                  type="email"
                   value={formData.userEmail}
-                  onChange={(e) => handleInputChange("userEmail", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("userEmail", e.target.value)
+                  }
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
+                  className="w-full"
                   label="Phone Number (Optional)"
                   placeholder="+91-XXXXXXXXXX"
                   value={formData.userPhone}
-                  onChange={(e) => handleInputChange("userPhone", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("userPhone", e.target.value)
+                  }
                 />
 
                 <Input
                   isRequired
+                  className="w-full"
                   label="Constituency"
                   placeholder="Enter your constituency"
                   value={formData.constituency}
-                  onChange={(e) => handleInputChange("constituency", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("constituency", e.target.value)
+                  }
                 />
               </div>
 
               {/* Query Details */}
               <Input
                 isRequired
+                className="w-full"
                 label="Subject"
                 placeholder="Brief subject of your query"
                 value={formData.subject}
                 onChange={(e) => handleInputChange("subject", e.target.value)}
-                className="w-full"
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Select
+                  className="w-full"
                   label="Category"
                   placeholder="Select category"
                   value={formData.category}
-                  onChange={(e) => handleInputChange("category", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("category", e.target.value)
+                  }
                 >
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
@@ -203,11 +223,13 @@ function Page() {
                 </Select>
 
                 <Select
+                  className="w-full"
                   label="Priority"
                   placeholder="Select priority"
                   value={formData.priority}
-                  onChange={(e) => handleInputChange("priority", e.target.value)}
-                  className="w-full"
+                  onChange={(e) =>
+                    handleInputChange("priority", e.target.value)
+                  }
                 >
                   {priorities.map((priority) => (
                     <SelectItem key={priority} value={priority}>
@@ -219,22 +241,22 @@ function Page() {
 
               <Textarea
                 isRequired
+                className="w-full"
                 label="Message"
-                placeholder="Please describe your query in detail..."
                 minRows={5}
+                placeholder="Please describe your query in detail..."
                 value={formData.message}
                 onChange={(e) => handleInputChange("message", e.target.value)}
-                className="w-full"
               />
 
               {/* Submit Button */}
               <div className="flex justify-end pt-4">
                 <Button
-                  type="submit"
-                  color="primary"
-                  size="lg"
-                  disabled={isSubmitting || !isFormValid()}
                   className="px-8"
+                  color="primary"
+                  disabled={isSubmitting || !isFormValid()}
+                  size="lg"
+                  type="submit"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Query"}
                 </Button>
@@ -252,7 +274,10 @@ function Page() {
             <li>• Your query will be reviewed by our team</li>
             <li>• You'll receive a confirmation email</li>
             <li>• We'll respond to your query as soon as possible</li>
-            <li>• You can track your query status if provided with login credentials</li>
+            <li>
+              • You can track your query status if provided with login
+              credentials
+            </li>
           </ul>
         </div>
       </div>

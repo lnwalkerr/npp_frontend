@@ -134,9 +134,7 @@ export default function CreateEventPage(): JSX.Element {
                 placeholder="Select event status"
               >
                 {statusOptions.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
+                  <SelectItem key={option.key}>{option.label}</SelectItem>
                 ))}
               </Select>
 

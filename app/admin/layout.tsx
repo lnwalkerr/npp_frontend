@@ -1,4 +1,5 @@
 import { AuthProvider } from "../auth-context";
+
 import NavbarLayout from "@/components/navbar";
 
 export default function AdminLayout({

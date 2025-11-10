@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const API_URL = "${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos/create";
+    const API_URL =
+      "${process.env.NEXT_PUBLIC_API_URL}/api/admin/videos/create";
 
     const response = await fetch(API_URL, {
       method: "POST",
@@ -42,5 +43,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-

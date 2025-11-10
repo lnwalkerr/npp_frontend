@@ -33,33 +33,36 @@ export async function GET(request: NextRequest) {
       search,
       constituency,
       sortBy,
-      sortOrder
+      sortOrder,
     });
 
-    const response = await fetch(`${API_BASE_URL}/api/admin/queries?${queryParams}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/queries?${queryParams}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to fetch queries" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching queries:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

@@ -50,19 +50,23 @@ export default function CreateImagesPage(): JSX.Element {
 
     if (!formData.title.trim()) {
       alert("Please enter a repository title");
+
       return;
     }
 
     // Check if any photos have files
-    const hasFiles = formData.photos.some(photo => photo.files.length > 0);
+    const hasFiles = formData.photos.some((photo) => photo.files.length > 0);
+
     if (!hasFiles) {
       alert("Please upload at least one image");
+
       return;
     }
 
     try {
       // Create FormData to send to API
       const formDataToSend = new FormData();
+
       formDataToSend.append("title", formData.title.trim());
 
       // Add all files with proper naming
@@ -74,7 +78,10 @@ export default function CreateImagesPage(): JSX.Element {
 
       console.log("🚀 Submitting repository creation...");
       console.log("Title:", formData.title);
-      console.log("Total files:", formData.photos.reduce((sum, photo) => sum + photo.files.length, 0));
+      console.log(
+        "Total files:",
+        formData.photos.reduce((sum, photo) => sum + photo.files.length, 0),
+      );
 
       const response = await fetch("/api/admin/images/create", {
         method: "POST",
@@ -84,7 +91,9 @@ export default function CreateImagesPage(): JSX.Element {
       const result = await response.json();
 
       if (result.success) {
-        alert(`✅ Repository "${result.data.title}" created successfully with ${result.data.imageCount} image(s)!`);
+        alert(
+          `✅ Repository "${result.data.title}" created successfully with ${result.data.imageCount} image(s)!`,
+        );
         router.push("/admin/images");
       } else {
         alert(`❌ Error: ${result.message}`);
@@ -146,8 +155,6 @@ export default function CreateImagesPage(): JSX.Element {
     }));
   };
 
-
-
   const handlePhotoTitleChange = (id: number, title: string): void => {
     setFormData((prev) => ({
       ...prev,
@@ -207,7 +214,11 @@ export default function CreateImagesPage(): JSX.Element {
                 coverPhotoIndex = 0;
               }
               // If multiple images are being added and no cover is set, set first as cover
-              else if (photo.files.length === 0 && acceptedFiles.length > 1 && !photo.isCover) {
+              else if (
+                photo.files.length === 0 &&
+                acceptedFiles.length > 1 &&
+                !photo.isCover
+              ) {
                 isCover = true;
                 coverPhotoIndex = 0;
               }
@@ -237,8 +248,12 @@ export default function CreateImagesPage(): JSX.Element {
           // Clean up the specific preview URL
           URL.revokeObjectURL(photo.previews[previewIndex]);
 
-          const updatedFiles = photo.files.filter((_, index) => index !== previewIndex);
-          const updatedPreviews = photo.previews.filter((_, index) => index !== previewIndex);
+          const updatedFiles = photo.files.filter(
+            (_, index) => index !== previewIndex,
+          );
+          const updatedPreviews = photo.previews.filter(
+            (_, index) => index !== previewIndex,
+          );
 
           // Handle cover photo index adjustment
           let isCover = photo.isCover;
@@ -256,11 +271,17 @@ export default function CreateImagesPage(): JSX.Element {
               coverPhotoIndex = 0;
             } else {
               // Multiple images left, keep cover but adjust index if needed
-              if (photo.coverPhotoIndex !== null && photo.coverPhotoIndex > previewIndex) {
+              if (
+                photo.coverPhotoIndex !== null &&
+                photo.coverPhotoIndex > previewIndex
+              ) {
                 coverPhotoIndex = photo.coverPhotoIndex - 1;
               }
             }
-          } else if (photo.coverPhotoIndex !== null && photo.coverPhotoIndex > previewIndex) {
+          } else if (
+            photo.coverPhotoIndex !== null &&
+            photo.coverPhotoIndex > previewIndex
+          ) {
             // Adjust cover photo index since an image before it was removed
             coverPhotoIndex = photo.coverPhotoIndex - 1;
           }
@@ -288,7 +309,15 @@ export default function CreateImagesPage(): JSX.Element {
     setFormData((prev) => ({
       ...prev,
       photos: prev.photos.map((photo) =>
-        photo.id === photoId ? { ...photo, files: [], previews: [], isCover: false, coverPhotoIndex: null } : photo,
+        photo.id === photoId
+          ? {
+              ...photo,
+              files: [],
+              previews: [],
+              isCover: false,
+              coverPhotoIndex: null,
+            }
+          : photo,
       ),
     }));
   };
@@ -381,24 +410,33 @@ export default function CreateImagesPage(): JSX.Element {
                                       <div
                                         key={previewIndex}
                                         className="relative flex-shrink-0 cursor-pointer"
-                                        onClick={() => handleSetCoverPhoto(photo.id, previewIndex)}
+                                        onClick={() =>
+                                          handleSetCoverPhoto(
+                                            photo.id,
+                                            previewIndex,
+                                          )
+                                        }
                                       >
                                         <img
                                           alt={`Preview ${previewIndex + 1}`}
                                           className={`w-20 h-20 object-cover rounded-lg border-2 ${
-                                            photo.isCover && photo.coverPhotoIndex === previewIndex
+                                            photo.isCover &&
+                                            photo.coverPhotoIndex ===
+                                              previewIndex
                                               ? "border-blue-500 ring-2 ring-blue-200"
                                               : "border-gray-300"
                                           }`}
                                           src={preview}
                                         />
-                                        {photo.isCover && photo.coverPhotoIndex === previewIndex && (
-                                          <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                                            <span className="text-white text-xs font-semibold bg-blue-600 px-2 py-1 rounded">
-                                              Cover Photo
-                                            </span>
-                                          </div>
-                                        )}
+                                        {photo.isCover &&
+                                          photo.coverPhotoIndex ===
+                                            previewIndex && (
+                                            <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                              <span className="text-white text-xs font-semibold bg-blue-600 px-2 py-1 rounded">
+                                                Cover Photo
+                                              </span>
+                                            </div>
+                                          )}
                                         <button
                                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition text-xs shadow-lg"
                                           type="button"
@@ -448,17 +486,33 @@ export default function CreateImagesPage(): JSX.Element {
                             />
                             {photo.previews.length > 1 && (
                               <div className="text-sm text-gray-600">
-                                <p>💡 <strong>Click on any image above to set it as cover photo</strong></p>
-                                {photo.isCover && photo.coverPhotoIndex !== null && (
-                                  <p className="text-blue-600 mt-1">
-                                    Cover photo: {photo.files[photo.coverPhotoIndex]?.name || `Image ${photo.coverPhotoIndex + 1}`}
-                                  </p>
-                                )}
+                                <p>
+                                  💡{" "}
+                                  <strong>
+                                    Click on any image above to set it as cover
+                                    photo
+                                  </strong>
+                                </p>
+                                {photo.isCover &&
+                                  photo.coverPhotoIndex !== null && (
+                                    <p className="text-blue-600 mt-1">
+                                      Cover photo:{" "}
+                                      {photo.files[photo.coverPhotoIndex]
+                                        ?.name ||
+                                        `Image ${photo.coverPhotoIndex + 1}`}
+                                    </p>
+                                  )}
                               </div>
                             )}
                             {photo.previews.length === 1 && photo.isCover && (
                               <div className="text-sm text-green-600">
-                                <p>✅ <strong>Single image automatically set as cover photo</strong></p>
+                                <p>
+                                  ✅{" "}
+                                  <strong>
+                                    Single image automatically set as cover
+                                    photo
+                                  </strong>
+                                </p>
                               </div>
                             )}
                           </div>

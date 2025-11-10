@@ -27,7 +27,12 @@ interface RepositoryFormData {
 interface RepositoryData {
   _id: string;
   title: string;
-  images: Array<{ url: string; filename: string; originalName: string; description?: string }>;
+  images: Array<{
+    url: string;
+    filename: string;
+    originalName: string;
+    description?: string;
+  }>;
   created_at: string;
   imageCount: number;
 }
@@ -75,7 +80,7 @@ export default function EditImagesPage(): JSX.Element {
                 description: "", // Repository-level description, not individual image descriptions
                 isCover: false,
                 coverPhotoIndex: null,
-                previews: repository.images.map(img => img.url), // Use existing image URLs as previews
+                previews: repository.images.map((img) => img.url), // Use existing image URLs as previews
               },
             ],
           });
@@ -106,6 +111,7 @@ export default function EditImagesPage(): JSX.Element {
 
     if (!formData.title.trim()) {
       alert("Please enter a repository title");
+
       return;
     }
 
@@ -114,6 +120,7 @@ export default function EditImagesPage(): JSX.Element {
     try {
       // Create FormData to send to API
       const formDataToSend = new FormData();
+
       formDataToSend.append("title", formData.title.trim());
 
       // Add images to delete
@@ -133,7 +140,10 @@ export default function EditImagesPage(): JSX.Element {
       console.log("🚀 Updating repository...");
       console.log("Title:", formData.title);
       console.log("Images to delete:", imagesToDelete);
-      console.log("New files:", formData.photos.reduce((sum, photo) => sum + photo.files.length, 0));
+      console.log(
+        "New files:",
+        formData.photos.reduce((sum, photo) => sum + photo.files.length, 0),
+      );
 
       const response = await fetch(`/api/admin/images/${id}/update`, {
         method: "PATCH",
@@ -207,7 +217,10 @@ export default function EditImagesPage(): JSX.Element {
     }));
   };
 
-  const handlePhotoDescriptionChange = (photoId: number, description: string): void => {
+  const handlePhotoDescriptionChange = (
+    photoId: number,
+    description: string,
+  ): void => {
     setFormData((prev) => ({
       ...prev,
       photos: prev.photos.map((photo) =>
@@ -246,7 +259,11 @@ export default function EditImagesPage(): JSX.Element {
               let coverPhotoIndex = photo.coverPhotoIndex;
 
               // If this is the first new image being added and no cover is set, make it cover
-              if (photo.files.length === 0 && acceptedFiles.length === 1 && !photo.isCover) {
+              if (
+                photo.files.length === 0 &&
+                acceptedFiles.length === 1 &&
+                !photo.isCover
+              ) {
                 isCover = true;
                 coverPhotoIndex = photo.previews.length; // Index in the previews array
               }
@@ -273,23 +290,30 @@ export default function EditImagesPage(): JSX.Element {
       ...prev,
       photos: prev.photos.map((photo) => {
         if (photo.id === 1) {
-          const existingImagesCount = photo.previews.length - photo.files.length;
+          const existingImagesCount =
+            photo.previews.length - photo.files.length;
           const isExistingImage = previewIndex < existingImagesCount;
 
           if (isExistingImage) {
             // This is an existing image - add to deletion list and remove from previews
             const existingImageUrl = photo.previews[previewIndex];
-            const filename = existingImageUrl.split('/').pop() || '';
+            const filename = existingImageUrl.split("/").pop() || "";
 
-            setImagesToDelete(prev => [...prev, filename]);
+            setImagesToDelete((prev) => [...prev, filename]);
           } else {
             // This is a new uploaded file, revoke the object URL
             URL.revokeObjectURL(photo.previews[previewIndex]);
           }
 
           // Remove from arrays
-          const updatedFiles = isExistingImage ? photo.files : photo.files.filter((_, index) => index !== (previewIndex - existingImagesCount));
-          const updatedPreviews = photo.previews.filter((_, index) => index !== previewIndex);
+          const updatedFiles = isExistingImage
+            ? photo.files
+            : photo.files.filter(
+                (_, index) => index !== previewIndex - existingImagesCount,
+              );
+          const updatedPreviews = photo.previews.filter(
+            (_, index) => index !== previewIndex,
+          );
 
           // Handle cover photo index adjustment
           let isCover = photo.isCover;
@@ -307,11 +331,17 @@ export default function EditImagesPage(): JSX.Element {
               coverPhotoIndex = 0;
             } else {
               // Multiple images left, keep cover but adjust index if needed
-              if (photo.coverPhotoIndex !== null && photo.coverPhotoIndex > previewIndex) {
+              if (
+                photo.coverPhotoIndex !== null &&
+                photo.coverPhotoIndex > previewIndex
+              ) {
                 coverPhotoIndex = photo.coverPhotoIndex - 1;
               }
             }
-          } else if (photo.coverPhotoIndex !== null && photo.coverPhotoIndex > previewIndex) {
+          } else if (
+            photo.coverPhotoIndex !== null &&
+            photo.coverPhotoIndex > previewIndex
+          ) {
             // Adjust cover photo index since an image before it was removed
             coverPhotoIndex = photo.coverPhotoIndex - 1;
           }
@@ -337,14 +367,17 @@ export default function EditImagesPage(): JSX.Element {
         if (photo.id === 1) {
           // Only clear new uploaded files, keep existing images
           photo.previews.forEach((preview, index) => {
-            const isNewFile = index >= (photo.previews.length - photo.files.length);
+            const isNewFile =
+              index >= photo.previews.length - photo.files.length;
+
             if (isNewFile) {
               URL.revokeObjectURL(preview);
             }
           });
 
           // Keep existing images, remove only new uploads
-          const existingImagesCount = photo.previews.length - photo.files.length;
+          const existingImagesCount =
+            photo.previews.length - photo.files.length;
           const existingPreviews = photo.previews.slice(0, existingImagesCount);
 
           return {
@@ -352,9 +385,11 @@ export default function EditImagesPage(): JSX.Element {
             files: [],
             previews: existingPreviews,
             isCover: existingPreviews.length > 0 ? photo.isCover : false,
-            coverPhotoIndex: existingPreviews.length > 0 ? photo.coverPhotoIndex : null,
+            coverPhotoIndex:
+              existingPreviews.length > 0 ? photo.coverPhotoIndex : null,
           };
         }
+
         return photo;
       }),
     }));
@@ -365,7 +400,7 @@ export default function EditImagesPage(): JSX.Element {
       <div className="flex h-screen">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto" />
             <p className="mt-4 text-gray-600">Loading repository...</p>
           </div>
         </div>
@@ -449,46 +484,64 @@ export default function EditImagesPage(): JSX.Element {
                                   )}
                                 </div>
                                 <div className="flex gap-2 overflow-x-auto pb-2">
-                                  {photo.previews.map((preview, previewIndex) => {
-                                    const isExistingImage = previewIndex < (photo.previews.length - photo.files.length);
-                                    return (
-                                      <div
-                                        key={previewIndex}
-                                        className="relative flex-shrink-0 cursor-pointer"
-                                        onClick={() => handleSetCoverPhoto(previewIndex)}
-                                      >
-                                        <img
-                                          alt={`Preview ${previewIndex + 1}`}
-                                          className={`w-20 h-20 object-cover rounded-lg border-2 ${
-                                            photo.isCover && photo.coverPhotoIndex === previewIndex
-                                              ? "border-blue-500 ring-2 ring-blue-200"
-                                              : "border-gray-300"
-                                          }`}
-                                          src={preview}
-                                        />
-                                        {photo.isCover && photo.coverPhotoIndex === previewIndex && (
-                                          <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                                            <span className="text-white text-xs font-semibold bg-blue-600 px-2 py-1 rounded">
-                                              Cover Photo
-                                            </span>
-                                          </div>
-                                        )}
-                                        <button
-                                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition text-xs shadow-lg"
-                                          type="button"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeImagePreview(previewIndex);
-                                          }}
+                                  {photo.previews.map(
+                                    (preview, previewIndex) => {
+                                      const isExistingImage =
+                                        previewIndex <
+                                        photo.previews.length -
+                                          photo.files.length;
+
+                                      return (
+                                        <div
+                                          key={previewIndex}
+                                          className="relative flex-shrink-0 cursor-pointer"
+                                          onClick={() =>
+                                            handleSetCoverPhoto(previewIndex)
+                                          }
                                         >
-                                          <X className="w-3 h-3" />
-                                        </button>
-                                        <div className="text-xs text-center mt-1 truncate w-20">
-                                          {isExistingImage ? "Existing" : photo.files[previewIndex - (photo.previews.length - photo.files.length)]?.name}
+                                          <img
+                                            alt={`Preview ${previewIndex + 1}`}
+                                            className={`w-20 h-20 object-cover rounded-lg border-2 ${
+                                              photo.isCover &&
+                                              photo.coverPhotoIndex ===
+                                                previewIndex
+                                                ? "border-blue-500 ring-2 ring-blue-200"
+                                                : "border-gray-300"
+                                            }`}
+                                            src={preview}
+                                          />
+                                          {photo.isCover &&
+                                            photo.coverPhotoIndex ===
+                                              previewIndex && (
+                                              <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                                <span className="text-white text-xs font-semibold bg-blue-600 px-2 py-1 rounded">
+                                                  Cover Photo
+                                                </span>
+                                              </div>
+                                            )}
+                                          <button
+                                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition text-xs shadow-lg"
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              removeImagePreview(previewIndex);
+                                            }}
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </button>
+                                          <div className="text-xs text-center mt-1 truncate w-20">
+                                            {isExistingImage
+                                              ? "Existing"
+                                              : photo.files[
+                                                  previewIndex -
+                                                    (photo.previews.length -
+                                                      photo.files.length)
+                                                ]?.name}
+                                          </div>
                                         </div>
-                                      </div>
-                                    );
-                                  })}
+                                      );
+                                    },
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -510,23 +563,42 @@ export default function EditImagesPage(): JSX.Element {
                               placeholder="Photo description (optional)"
                               value={photo.description}
                               variant="flat"
-                              onChange={(e) => handlePhotoDescriptionChange(photo.id, e.target.value)}
+                              onChange={(e) =>
+                                handlePhotoDescriptionChange(
+                                  photo.id,
+                                  e.target.value,
+                                )
+                              }
                             />
 
                             {photo.previews.length > 1 && (
                               <div className="text-sm text-gray-600">
-                                <p>💡 <strong>Click on any image above to set it as cover photo</strong></p>
-                                {photo.isCover && photo.coverPhotoIndex !== null && (
-                                  <p className="text-blue-600 mt-1">
-                                    Cover photo: Image {photo.coverPhotoIndex + 1}
-                                  </p>
-                                )}
+                                <p>
+                                  💡{" "}
+                                  <strong>
+                                    Click on any image above to set it as cover
+                                    photo
+                                  </strong>
+                                </p>
+                                {photo.isCover &&
+                                  photo.coverPhotoIndex !== null && (
+                                    <p className="text-blue-600 mt-1">
+                                      Cover photo: Image{" "}
+                                      {photo.coverPhotoIndex + 1}
+                                    </p>
+                                  )}
                               </div>
                             )}
 
                             {photo.previews.length === 1 && photo.isCover && (
                               <div className="text-sm text-green-600">
-                                <p>✅ <strong>Single image automatically set as cover photo</strong></p>
+                                <p>
+                                  ✅{" "}
+                                  <strong>
+                                    Single image automatically set as cover
+                                    photo
+                                  </strong>
+                                </p>
                               </div>
                             )}
                           </div>
@@ -543,10 +615,15 @@ export default function EditImagesPage(): JSX.Element {
 
               {/* Buttons */}
               <div className="flex gap-3">
-                <Button color="primary" type="submit" disabled={isSubmitting}>
+                <Button color="primary" disabled={isSubmitting} type="submit">
                   {isSubmitting ? "Updating..." : "Update Repository"}
                 </Button>
-                <Button type="button" variant="flat" onClick={handleCancel} disabled={isSubmitting}>
+                <Button
+                  disabled={isSubmitting}
+                  type="button"
+                  variant="flat"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </Button>
               </div>

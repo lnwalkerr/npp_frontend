@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { readFile, writeFile, readdir } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+
+import { NextRequest, NextResponse } from "next/server";
 
 interface Repository {
   _id: string;
@@ -16,9 +17,12 @@ const REPOSITORIES_FILE = join(process.cwd(), "data", "repositories.json");
 // Ensure data directory and repositories file exist
 async function ensureDataFile() {
   const dataDir = join(process.cwd(), "data");
+
   try {
     if (!existsSync(dataDir)) {
-      await import("fs").then(fs => fs.mkdirSync(dataDir, { recursive: true }));
+      await import("fs").then((fs) =>
+        fs.mkdirSync(dataDir, { recursive: true }),
+      );
     }
     if (!existsSync(REPOSITORIES_FILE)) {
       await writeFile(REPOSITORIES_FILE, JSON.stringify([], null, 2));
@@ -29,7 +33,11 @@ async function ensureDataFile() {
 }
 
 // Get all repositories with pagination and search
-async function getRepositories(page: number = 1, limit: number = 10, search: string = "") {
+async function getRepositories(
+  page: number = 1,
+  limit: number = 10,
+  search: string = "",
+) {
   try {
     await ensureDataFile();
 
@@ -38,13 +46,16 @@ async function getRepositories(page: number = 1, limit: number = 10, search: str
 
     // Filter by search term if provided
     if (search) {
-      repositories = repositories.filter(repo =>
-        repo.title.toLowerCase().includes(search.toLowerCase())
+      repositories = repositories.filter((repo) =>
+        repo.title.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     // Sort by creation date (newest first)
-    repositories.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    repositories.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
 
     const totalItems = repositories.length;
     const totalPages = Math.ceil(totalItems / limit);
@@ -68,6 +79,7 @@ async function getRepositories(page: number = 1, limit: number = 10, search: str
     };
   } catch (error) {
     console.error("Error reading repositories:", error);
+
     return {
       success: false,
       message: "Failed to fetch repositories",
@@ -96,6 +108,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error in GET /api/admin/images:", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -110,8 +123,7 @@ export async function GET(request: NextRequest) {
           hasPrevPage: false,
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

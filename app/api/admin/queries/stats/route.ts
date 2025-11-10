@@ -18,17 +18,17 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { message: data.message || "Failed to fetch query statistics" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching query statistics:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
