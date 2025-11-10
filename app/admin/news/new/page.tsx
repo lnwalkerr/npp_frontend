@@ -23,7 +23,7 @@ export default function CreateNewsPage(): JSX.Element {
         setLoadingNewsTypes(true);
 
         // First API call to get the master category ID
-        const categoryResponse = await fetch('http://localhost:5001/api/master/masterCategory/getAll?code=typeOfNews', {
+        const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterCategory/getAll?code=typeOfNews`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export default function CreateNewsPage(): JSX.Element {
         const masterCategoryId = categoryData.data[0]._id;
 
         // Second API call to get the news types using the category ID
-        const typesResponse = await fetch(`http://localhost:5001/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
+        const typesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/master/masterData/getByMasterCategoryId?masterCategoryId=${masterCategoryId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
