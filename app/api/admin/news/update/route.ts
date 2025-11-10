@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { searchParams } = new URL(req.url);
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { message: "News ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/admin/news/update?id=${id}`;
+
+    const response = await fetch(API_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: data.message || "Failed to update news article" },
+        { status: response.status },
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("News update error:", error);
+
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+
