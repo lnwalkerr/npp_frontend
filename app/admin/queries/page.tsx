@@ -66,10 +66,16 @@ function Page() {
     "Healthcare",
     "Agriculture",
     "Employment",
-    "Other"
+    "Other",
   ];
   const priorities = ["All Priorities", "High", "Medium", "Low"];
-  const statuses = ["All Statuses", "Open", "In Progress", "Resolved", "Closed"];
+  const statuses = [
+    "All Statuses",
+    "Open",
+    "In Progress",
+    "Resolved",
+    "Closed",
+  ];
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -222,7 +228,7 @@ function Page() {
           },
           body: JSON.stringify({
             reply: replyText.trim(),
-            status: "Resolved"
+            status: "Resolved",
           }),
         });
         const data = await response.json();
@@ -251,7 +257,7 @@ function Page() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            status: newStatus
+            status: newStatus,
           }),
         });
         const data = await response.json();
@@ -394,7 +400,8 @@ function Page() {
                         </div>
                       )}
 
-                    {(selectedQuery.status === "Open" || selectedQuery.status === "In Progress") && (
+                    {(selectedQuery.status === "Open" ||
+                      selectedQuery.status === "In Progress") && (
                       <div>
                         <p className="text-sm text-gray-500 mb-2">
                           Type your reply here...
@@ -431,7 +438,9 @@ function Page() {
                 </Button>
                 <Button
                   color={
-                    selectedQuery?.status === "In Progress" ? "primary" : "default"
+                    selectedQuery?.status === "In Progress"
+                      ? "primary"
+                      : "default"
                   }
                   variant={
                     selectedQuery?.status === "In Progress" ? "solid" : "flat"
@@ -458,7 +467,8 @@ function Page() {
                   Set as Resolved
                 </Button>
 
-                {(selectedQuery?.status === "Open" || selectedQuery?.status === "In Progress") && (
+                {(selectedQuery?.status === "Open" ||
+                  selectedQuery?.status === "In Progress") && (
                   <Button
                     color="primary"
                     disabled={!replyText.trim()}
@@ -532,7 +542,6 @@ function Page() {
           {/* HeroUI Table */}
           <Table
             aria-label="Queries table"
-            items={apiData.queries || []}
             bottomContent={
               apiData.totalPages > 0 ? (
                 <div className="flex w-full justify-end pr-4 mt-4">
@@ -555,10 +564,11 @@ function Page() {
               )}
             </TableHeader>
             <TableBody
+              items={apiData.queries || []}
               loadingContent={<Spinner />}
               loadingState={isLoading ? "loading" : "idle"}
             >
-              {(item) => (
+              {(item: Query) => (
                 <TableRow key={item.id}>
                   {(columnKey) => (
                     <TableCell>{renderCell(item, String(columnKey))}</TableCell>
